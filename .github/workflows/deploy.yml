@@ -1,16 +1,13 @@
-name: Deploy to S3 and CloudFront
-
+name: Deploy to AWS S3
 on:
   push:
     branches: [ main ]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -21,13 +18,9 @@ jobs:
     
     - name: Deploy to S3
       run: |
-        aws s3 sync . s3://chinecherem-ani-portfolio-website \
-          --exclude ".git*" \
-          --exclude ".github*" \
-          --delete
+        aws s3 sync . s3://your-bucket-name --exclude ".git*" --exclude ".github*"
     
     - name: CloudFront Cache Invalidation
+      continue-on-error: true  # This allows the workflow to continue if invalidation fails
       run: |
-        aws cloudfront create-invalidation \
-          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-          --paths "/*"
+        aws cloudfront create-invalidation --distribution-id E2FH0AD7I1UP6C --paths "/*"
