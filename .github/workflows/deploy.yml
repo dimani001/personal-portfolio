@@ -1,4 +1,4 @@
-name: Deploy to S3
+name: Deploy to S3 and CloudFront
 
 on:
   push:
@@ -21,4 +21,13 @@ jobs:
     
     - name: Deploy to S3
       run: |
-        aws s3 sync . s3://chinecherem-ani-portfolio-website --exclude ".git*" --exclude ".github*"
+        aws s3 sync . s3://chinecherem-ani-portfolio-website \
+          --exclude ".git*" \
+          --exclude ".github*" \
+          --delete
+    
+    - name: CloudFront Cache Invalidation
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+          --paths "/*"
